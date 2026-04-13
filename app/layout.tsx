@@ -67,7 +67,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const currentYear = new Date().getFullYear();
-  const hostname = "portfolio-pankaj.vercel.app";
 
   return (
     <html
@@ -95,14 +94,14 @@ export default function RootLayout({
             <p className="text-xs text-muted-foreground text-center">
               © {currentYear}.{" "}
               <span className="text-foreground/60">Built with love using</span>{" "}
-              <a
+              {/* <a
                 href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${hostname}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-foreground/80 hover:text-foreground transition-smooth underline underline-offset-2"
               >
-                caffeine.ai
-              </a>
+                caffeine.ai */}
+              {/* </a> */}
             </p>
 
             <div className="flex items-center gap-4 text-xs text-muted-foreground">

@@ -33,6 +33,20 @@ const MailIcon = ({ size }: { size: number }) => (
     <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
   </svg>
 );
+
+const InstagramIcon = ({ size }: { size: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="3" y="3" width="18" height="18" rx="5" />
+    <circle cx="12" cy="12" r="4" />
+    <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+  </svg>
+);
+
+const PhoneIcon = ({ size }: { size: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.7 12.7 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.7 12.7 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+  </svg>
+);
 const TECH_STACK = [
   "Next.js",
   "React",
@@ -47,9 +61,11 @@ const SOCIAL_LINKS = [
   {
     icon: LinkedinIcon,
     label: "LinkedIn",
-    href: "https://linkedin.com/in/pankajsharma",
+    href: "https://www.linkedin.com/in/pankaj-sharma-2a427327b/",
   },
-  { icon: MailIcon, label: "Email", href: "mailto:pankaj@nitj.ac.in" },
+  { icon: InstagramIcon, label: "Instagram", href: "https://instagram.com/" },
+  { icon: PhoneIcon, label: "WhatsApp", href: "https://wa.me/919653823030" },
+  { icon: MailIcon, label: "Email", href: "mailto:pkjsharma987@mail.com" },
 ];
 
 const SKILL_CLOUD_IMAGES = [
@@ -102,6 +118,24 @@ const EXPERIENCE_ITEMS = [
       "Collaborated on problem-solving and engineering workflows in academic teams.",
       "Strengthened fundamentals in data handling, API design, and application structure.",
     ],
+  },
+];
+
+const HIGHLIGHT_CARDS = [
+  {
+    title: "Fast Delivery",
+    metric: "< 48h",
+    description: "Rapid prototyping and clear iteration loops for quick product validation.",
+  },
+  {
+    title: "Production Focus",
+    metric: "99%",
+    description: "Clean code, responsive UI, and reliable backend integration for real users.",
+  },
+  {
+    title: "Learning Velocity",
+    metric: "Daily",
+    description: "Consistent upskilling in modern web architecture and developer tooling.",
   },
 ];
 
@@ -170,6 +204,29 @@ type ProjectCardType = {
   code: string;
 };
 
+type ProjectCategory = keyof typeof PROJECT_GROUPS;
+
+type SectionVisibility = {
+  highlights: boolean;
+  projects: boolean;
+  skills: boolean;
+  experience: boolean;
+  timeline: boolean;
+  contact: boolean;
+};
+
+const DEFAULT_VISIBILITY: SectionVisibility = {
+  highlights: true,
+  projects: true,
+  skills: true,
+  experience: true,
+  timeline: true,
+  contact: true,
+};
+
+const PROJECT_STORAGE_KEY = "portfolio-project-groups";
+const SECTION_STORAGE_KEY = "portfolio-section-visibility";
+
 type CertificateItem = {
   title: string;
   issuer: string;
@@ -220,35 +277,133 @@ function scrollToSection(id: string) {
 
 export function HeroSection() {
   const heroRef = useRef<HTMLDivElement>(null);
+  const tapCountRef = useRef(0);
+  const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeCertificate, setActiveCertificate] = useState<CertificateItem | null>(null);
+  const [isControlOpen, setIsControlOpen] = useState(false);
+  const [projectGroups, setProjectGroups] = useState<typeof PROJECT_GROUPS>(() => {
+    if (typeof window === "undefined") return PROJECT_GROUPS;
+    try {
+      const savedProjects = localStorage.getItem(PROJECT_STORAGE_KEY);
+      return savedProjects
+        ? (JSON.parse(savedProjects) as typeof PROJECT_GROUPS)
+        : PROJECT_GROUPS;
+    } catch {
+      return PROJECT_GROUPS;
+    }
+  });
+  const [sectionVisibility, setSectionVisibility] = useState<SectionVisibility>(() => {
+    if (typeof window === "undefined") return DEFAULT_VISIBILITY;
+    try {
+      const savedVisibility = localStorage.getItem(SECTION_STORAGE_KEY);
+      return savedVisibility ? JSON.parse(savedVisibility) : DEFAULT_VISIBILITY;
+    } catch {
+      return DEFAULT_VISIBILITY;
+    }
+  });
+  const [projectDraft, setProjectDraft] = useState({
+    category: "fullstack" as ProjectCategory,
+    title: "",
+    description: "",
+    stack: "",
+    demo: "#",
+    code: "#",
+  });
+
   const allProjects = [
-    ...PROJECT_GROUPS.fullstack,
-    ...PROJECT_GROUPS.mobile,
-    ...PROJECT_GROUPS.backend,
+    ...projectGroups.fullstack,
+    ...projectGroups.mobile,
+    ...projectGroups.backend,
   ];
   const projectTabs = [
     {
-      title: "All",
+      title: `All (${allProjects.length})`,
       value: "all",
       content: <ProjectGrid projects={allProjects} />,
     },
     {
-      title: "Full Stack",
+      title: `Full Stack (${projectGroups.fullstack.length})`,
       value: "fullstack",
-      content: <ProjectGrid projects={PROJECT_GROUPS.fullstack} />,
+      content: <ProjectGrid projects={projectGroups.fullstack} />,
     },
     {
-      title: "Mobile",
+      title: `Mobile (${projectGroups.mobile.length})`,
       value: "mobile",
-      content: <ProjectGrid projects={PROJECT_GROUPS.mobile} />,
+      content: <ProjectGrid projects={projectGroups.mobile} />,
     },
     {
-      title: "Backend",
+      title: `Backend (${projectGroups.backend.length})`,
       value: "backend",
-      content: <ProjectGrid projects={PROJECT_GROUPS.backend} />,
+      content: <ProjectGrid projects={projectGroups.backend} />,
     },
   ];
+
+  useEffect(() => {
+    localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(projectGroups));
+  }, [projectGroups]);
+
+  useEffect(() => {
+    localStorage.setItem(SECTION_STORAGE_KEY, JSON.stringify(sectionVisibility));
+  }, [sectionVisibility]);
+
+  function addCustomProject() {
+    const title = projectDraft.title.trim();
+    const description = projectDraft.description.trim();
+    if (!title || !description) return;
+
+    const parsedStack = projectDraft.stack
+      .split(",")
+      .map((part) => part.trim())
+      .filter(Boolean);
+
+    setProjectGroups((prev: typeof PROJECT_GROUPS) => ({
+      ...prev,
+      [projectDraft.category]: [
+        {
+          title,
+          description,
+          stack: parsedStack.length ? parsedStack : ["Web"],
+          demo: projectDraft.demo.trim() || "#",
+          code: projectDraft.code.trim() || "#",
+        },
+        ...prev[projectDraft.category],
+      ],
+    }));
+
+    setProjectDraft((prev) => ({
+      ...prev,
+      title: "",
+      description: "",
+      stack: "",
+      demo: "#",
+      code: "#",
+    }));
+  }
+
+  function removeProject(category: ProjectCategory, index: number) {
+    setProjectGroups((prev: typeof PROJECT_GROUPS) => ({
+      ...prev,
+      [category]: prev[category].filter((_, i) => i !== index),
+    }));
+  }
+
+  function handleBrandTap() {
+    scrollToSection("hero");
+
+    tapCountRef.current += 1;
+    if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
+
+    tapTimerRef.current = setTimeout(() => {
+      tapCountRef.current = 0;
+    }, 450);
+
+    if (tapCountRef.current >= 3) {
+      setIsControlOpen(true);
+      tapCountRef.current = 0;
+      if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
+    }
+  }
 
   const timelineData = [
     {
@@ -373,6 +528,12 @@ export function HeroSection() {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
+    };
+  }, []);
+
   const container: Variants = {
     hidden: {},
     show: { transition: { staggerChildren: 0.12, delayChildren: 0.3 } },
@@ -398,7 +559,7 @@ export function HeroSection() {
         <nav className="max-w-6xl mx-auto rounded-2xl border border-border/60 bg-background/70 backdrop-blur-xl px-4 py-3 flex items-center justify-between">
           <button
             type="button"
-            onClick={() => scrollToSection("hero")}
+            onClick={handleBrandTap}
             className="flex items-center gap-2.5"
             aria-label="Go to top"
           >
@@ -411,34 +572,42 @@ export function HeroSection() {
           </button>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => scrollToSection("projects")}
-              className="hidden md:inline-flex px-3 py-2 rounded-lg text-xs font-mono text-muted-foreground border border-border bg-card/80 hover:bg-accent hover:text-accent-foreground"
-            >
-              Projects
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollToSection("skills")}
-              className="hidden md:inline-flex px-3 py-2 rounded-lg text-xs font-mono text-muted-foreground border border-border bg-card/80 hover:bg-accent hover:text-accent-foreground"
-            >
-              Skills
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollToSection("timeline")}
-              className="hidden md:inline-flex px-3 py-2 rounded-lg text-xs font-mono text-muted-foreground border border-border bg-card/80 hover:bg-accent hover:text-accent-foreground"
-            >
-              Timeline
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollToSection("contact")}
-              className="hidden md:inline-flex px-3 py-2 rounded-lg text-xs font-mono text-muted-foreground border border-border bg-card/80 hover:bg-accent hover:text-accent-foreground"
-            >
-              Contact
-            </button>
+            {sectionVisibility.projects && (
+              <button
+                type="button"
+                onClick={() => scrollToSection("projects")}
+                className="hidden md:inline-flex px-3 py-2 rounded-lg text-xs font-mono text-muted-foreground border border-border bg-card/80 hover:bg-accent hover:text-accent-foreground"
+              >
+                Projects
+              </button>
+            )}
+            {sectionVisibility.skills && (
+              <button
+                type="button"
+                onClick={() => scrollToSection("skills")}
+                className="hidden md:inline-flex px-3 py-2 rounded-lg text-xs font-mono text-muted-foreground border border-border bg-card/80 hover:bg-accent hover:text-accent-foreground"
+              >
+                Skills
+              </button>
+            )}
+            {sectionVisibility.timeline && (
+              <button
+                type="button"
+                onClick={() => scrollToSection("timeline")}
+                className="hidden md:inline-flex px-3 py-2 rounded-lg text-xs font-mono text-muted-foreground border border-border bg-card/80 hover:bg-accent hover:text-accent-foreground"
+              >
+                Timeline
+              </button>
+            )}
+            {sectionVisibility.contact && (
+              <button
+                type="button"
+                onClick={() => scrollToSection("contact")}
+                className="hidden md:inline-flex px-3 py-2 rounded-lg text-xs font-mono text-muted-foreground border border-border bg-card/80 hover:bg-accent hover:text-accent-foreground"
+              >
+                Contact
+              </button>
+            )}
             <AnimatedThemeToggler className="h-9 w-9 rounded-xl border border-border bg-card text-foreground flex items-center justify-center hover:bg-accent" />
           </div>
         </nav>
@@ -628,7 +797,43 @@ export function HeroSection() {
       />
       </section>
 
-      <section
+      {sectionVisibility.highlights && (
+        <section id="highlights" className="relative px-6 py-18 md:py-22 bg-background scroll-mt-24">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-8">
+            <Badge className="px-4 py-1.5 text-xs font-mono tracking-widest uppercase mb-3">
+              Why Work With Me
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-display font-bold tracking-tight mb-2">Highlights</h2>
+            <p className="text-sm md:text-base text-muted-foreground font-mono">
+              A quick snapshot of how I build and ship digital products.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {HIGHLIGHT_CARDS.map((card, idx) => (
+              <motion.article
+                key={card.title}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{ duration: 0.45, delay: idx * 0.08 }}
+                className="rounded-2xl border border-border bg-card/85 p-5"
+              >
+                <p className="text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground mb-3">
+                  {card.title}
+                </p>
+                <p className="text-3xl font-display font-bold text-foreground mb-3">{card.metric}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{card.description}</p>
+              </motion.article>
+            ))}
+          </div>
+        </div>
+        </section>
+      )}
+
+      {sectionVisibility.projects && (
+        <section
         id="projects"
         className="relative px-6 py-24 md:py-28 bg-background scroll-mt-24"
       >
@@ -656,21 +861,17 @@ export function HeroSection() {
               Projects
             </h2>
             <p className="text-sm md:text-base text-muted-foreground font-mono">
-              Selected products and systems I have shipped across web, mobile, and backend.
+              Browse my work by category using tabs: full stack, mobile, and backend.
             </p>
           </div>
 
-          <Tabs
-            tabs={projectTabs}
-            containerClassName="justify-center gap-2 flex-wrap"
-            tabClassName="border border-border bg-card text-sm font-mono"
-            activeTabClassName="bg-accent border-border"
-            contentClassName="mt-8"
-          />
+          <Tabs tabs={projectTabs} />
         </div>
-      </section>
+        </section>
+      )}
 
-      <section id="skills" className="relative px-6 py-24 md:py-28 bg-background">
+      {sectionVisibility.skills && (
+        <section id="skills" className="relative px-6 py-24 md:py-28 bg-background">
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -721,9 +922,11 @@ export function HeroSection() {
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
-      <section id="experience" className="relative px-6 py-24 md:py-28 bg-background scroll-mt-24">
+      {sectionVisibility.experience && (
+        <section id="experience" className="relative px-6 py-24 md:py-28 bg-background scroll-mt-24">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-10">
             <Badge
@@ -757,9 +960,11 @@ export function HeroSection() {
             ))}
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
-      <section id="timeline" className="relative px-4 md:px-6 py-20 bg-background scroll-mt-24">
+      {sectionVisibility.timeline && (
+        <section id="timeline" className="relative px-4 md:px-6 py-20 bg-background scroll-mt-24">
         <div className="max-w-6xl mx-auto mb-10 text-center">
           <Badge
             className="px-4 py-1.5 text-xs font-mono tracking-widest uppercase mb-4"
@@ -779,9 +984,150 @@ export function HeroSection() {
         <div className="rounded-3xl border border-border overflow-hidden bg-card/85">
           <Timeline data={timelineData} />
         </div>
-      </section>
+        </section>
+      )}
 
-      <ContactSection />
+      {sectionVisibility.contact && <ContactSection />}
+
+      {isControlOpen && (
+        <div className="fixed inset-0 z-120 bg-black/60 p-4 flex items-center justify-center">
+          <div className="w-full max-w-xl rounded-2xl border border-border bg-card p-5 md:p-6 max-h-[88vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Secret Portfolio Controls</h3>
+              <button
+                type="button"
+                className="h-8 w-8 rounded-md border border-border text-muted-foreground hover:text-foreground"
+                onClick={() => setIsControlOpen(false)}
+                aria-label="Close controls"
+              >
+                X
+              </button>
+            </div>
+
+            <div className="space-y-3 mb-6">
+              <p className="text-xs font-mono uppercase tracking-widest text-muted-foreground">Toggle sections</p>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                {Object.entries(sectionVisibility).map(([key, value]) => (
+                  <label key={key} className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
+                    <input
+                      type="checkbox"
+                      checked={value}
+                      onChange={(e) =>
+                        setSectionVisibility((prev) => ({
+                          ...prev,
+                          [key]: e.target.checked,
+                        }))
+                      }
+                    />
+                    <span className="capitalize">{key}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <p className="text-xs font-mono uppercase tracking-widest text-muted-foreground">Manage projects</p>
+              <div className="space-y-2">
+                {(Object.keys(projectGroups) as ProjectCategory[]).map((category) => (
+                  <div key={category} className="rounded-lg border border-border bg-background p-3">
+                    <p className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2">
+                      {category}
+                    </p>
+                    <div className="space-y-1.5 max-h-32 overflow-y-auto pr-1">
+                      {projectGroups[category].map((project, index) => (
+                        <div key={`${category}-${project.title}-${index}`} className="flex items-center justify-between gap-2 rounded-md bg-card px-2 py-1.5 text-sm">
+                          <span className="truncate">{project.title}</span>
+                          <button
+                            type="button"
+                            className="text-xs text-muted-foreground hover:text-destructive"
+                            onClick={() => removeProject(category, index)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      ))}
+                      {projectGroups[category].length === 0 && (
+                        <p className="text-xs text-muted-foreground">No projects</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <p className="text-xs font-mono uppercase tracking-widest text-muted-foreground">Add project</p>
+              <select
+                className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm"
+                value={projectDraft.category}
+                onChange={(e) =>
+                  setProjectDraft((prev) => ({
+                    ...prev,
+                    category: e.target.value as ProjectCategory,
+                  }))
+                }
+              >
+                <option value="fullstack">Full Stack</option>
+                <option value="mobile">Mobile</option>
+                <option value="backend">Backend</option>
+              </select>
+              <input
+                className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm"
+                placeholder="Project title"
+                value={projectDraft.title}
+                onChange={(e) => setProjectDraft((prev) => ({ ...prev, title: e.target.value }))}
+              />
+              <textarea
+                className="w-full min-h-20 rounded-lg border border-border bg-background px-3 py-2 text-sm"
+                placeholder="Project description"
+                value={projectDraft.description}
+                onChange={(e) =>
+                  setProjectDraft((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
+              />
+              <input
+                className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm"
+                placeholder="Stack (comma separated)"
+                value={projectDraft.stack}
+                onChange={(e) => setProjectDraft((prev) => ({ ...prev, stack: e.target.value }))}
+              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <input
+                  className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm"
+                  placeholder="Demo URL"
+                  value={projectDraft.demo}
+                  onChange={(e) => setProjectDraft((prev) => ({ ...prev, demo: e.target.value }))}
+                />
+                <input
+                  className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm"
+                  placeholder="Source URL"
+                  value={projectDraft.code}
+                  onChange={(e) => setProjectDraft((prev) => ({ ...prev, code: e.target.value }))}
+                />
+              </div>
+
+              <div className="flex items-center justify-between gap-2 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setProjectGroups(PROJECT_GROUPS);
+                    setSectionVisibility(DEFAULT_VISIBILITY);
+                    localStorage.removeItem(PROJECT_STORAGE_KEY);
+                    localStorage.removeItem(SECTION_STORAGE_KEY);
+                  }}
+                >
+                  Reset
+                </Button>
+                <Button type="button" onClick={addCustomProject}>
+                  Add Project
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {activeCertificate && (
         <div className="fixed inset-0 z-120 flex items-center justify-center bg-black/70 p-4">
