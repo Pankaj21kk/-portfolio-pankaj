@@ -1,0 +1,10 @@
+<svg width="480" height="320" viewBox="0 0 480 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="480" height="320" rx="20" fill="#0B1220"/>
+  <rect x="62" y="60" width="356" height="214" rx="14" fill="#111827" stroke="#334155"/>
+  <rect x="88" y="92" width="110" height="88" rx="10" fill="#0F172A" stroke="#334155"/>
+  <rect x="212" y="92" width="180" height="12" rx="6" fill="#E2E8F0"/>
+  <rect x="212" y="116" width="140" height="9" rx="4.5" fill="#94A3B8"/>
+  <rect x="212" y="138" width="90" height="9" rx="4.5" fill="#94A3B8"/>
+  <rect x="88" y="198" width="304" height="42" rx="21" fill="#22D3EE"/>
+  <text x="240" y="224" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#082F49">Buy Now</text>
+</svg>

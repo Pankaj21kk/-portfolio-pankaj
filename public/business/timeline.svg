@@ -1,0 +1,14 @@
+<svg width="620" height="220" viewBox="0 0 620 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="620" height="220" rx="18" fill="#0B1220"/>
+  <path d="M60 120H560" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="90" cy="120" r="16" fill="#22D3EE"/>
+  <circle cx="210" cy="120" r="16" fill="#38BDF8"/>
+  <circle cx="330" cy="120" r="16" fill="#0EA5E9"/>
+  <circle cx="450" cy="120" r="16" fill="#06B6D4"/>
+  <circle cx="530" cy="120" r="16" fill="#67E8F9"/>
+  <text x="90" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#E2E8F0">Plan</text>
+  <text x="210" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#E2E8F0">Design</text>
+  <text x="330" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#E2E8F0">Build</text>
+  <text x="450" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#E2E8F0">Test</text>
+  <text x="530" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#E2E8F0">Launch</text>
+</svg>

@@ -59,7 +59,7 @@ export const Tabs = ({
               />
             )}
 
-            <span className="relative block text-foreground">
+            <span className="relative block text-current">
               {tab.title}
             </span>
           </button>

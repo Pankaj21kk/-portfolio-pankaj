@@ -39,6 +39,14 @@ export const metadata: Metadata = {
       "Explore projects, skills, timeline, and development experience of Pankaj Sharma.",
     url: "/",
     siteName: "Pankaj Portfolio",
+    images: [
+      {
+        url: "/business/hero-website.svg",
+        width: 1200,
+        height: 630,
+        alt: "Pankaj Sharma portfolio and business web solutions",
+      },
+    ],
     locale: "en_US",
     type: "website",
   },
@@ -47,6 +55,7 @@ export const metadata: Metadata = {
     title: "Pankaj Sharma | Full Stack Web Developer",
     description:
       "Portfolio featuring full-stack projects, skills, and professional experience.",
+    images: ["/business/hero-website.svg"],
   },
   robots: {
     index: true,
@@ -57,8 +66,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  themeColor: "#000000",
+  themeColor: "#0B0F14",
 };
 
 export default function RootLayout({
@@ -67,6 +75,33 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const currentYear = new Date().getFullYear();
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        name: "Pankaj Sharma",
+        url: "https://portfolio-pankaj.vercel.app",
+        jobTitle: "Full Stack Web Developer",
+        alumniOf: "NIT Jalandhar",
+        sameAs: [
+          "https://github.com/pankajsharma",
+          "https://www.linkedin.com/in/pankaj-sharma-2a427327b/",
+          "https://instagram.com/",
+        ],
+      },
+      {
+        "@type": "ProfessionalService",
+        name: "Pankaj Web Solution",
+        description:
+          "Business website design and development services including pricing, SEO, and launch support.",
+        areaServed: "India",
+        telephone: "+91-9653823030",
+        email: "pkjsharma987@mail.com",
+        url: "https://portfolio-pankaj.vercel.app",
+      },
+    ],
+  };
 
   return (
     <html
@@ -74,6 +109,10 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-screen flex flex-col bg-background text-foreground">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
         {children}
       </body>
 

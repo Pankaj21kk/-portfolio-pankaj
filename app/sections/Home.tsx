@@ -4,6 +4,7 @@ import { type Variants, motion, useMotionValue, useSpring } from "framer-motion"
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ParticleBackground } from "@/components/Perticlebackground";
+import { BusinessSection } from "@/app/sections/BusinessSection";
 import { ContactSection } from "@/app/sections/contactsection";
 import { LoadingScreen } from "@/components/LoadingScreenElement";
 import { TypewriterEffect } from "@/components/TypewriterEffect";
@@ -209,6 +210,7 @@ type ProjectCategory = keyof typeof PROJECT_GROUPS;
 type SectionVisibility = {
   highlights: boolean;
   projects: boolean;
+  business: boolean;
   skills: boolean;
   experience: boolean;
   timeline: boolean;
@@ -218,6 +220,7 @@ type SectionVisibility = {
 const DEFAULT_VISIBILITY: SectionVisibility = {
   highlights: true,
   projects: true,
+  business: true,
   skills: true,
   experience: true,
   timeline: true,
@@ -571,12 +574,12 @@ export function HeroSection() {
             </span>
           </button>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 overflow-x-auto no-visible-scrollbar max-w-[70vw] sm:max-w-none">
             {sectionVisibility.projects && (
               <button
                 type="button"
                 onClick={() => scrollToSection("projects")}
-                className="hidden md:inline-flex px-3 py-2 rounded-lg text-xs font-mono text-muted-foreground border border-border bg-card/80 hover:bg-accent hover:text-accent-foreground"
+                className="inline-flex px-3 py-2 rounded-lg text-xs font-mono text-muted-foreground border border-border bg-card/80 hover:bg-accent hover:text-accent-foreground whitespace-nowrap"
               >
                 Projects
               </button>
@@ -585,16 +588,25 @@ export function HeroSection() {
               <button
                 type="button"
                 onClick={() => scrollToSection("skills")}
-                className="hidden md:inline-flex px-3 py-2 rounded-lg text-xs font-mono text-muted-foreground border border-border bg-card/80 hover:bg-accent hover:text-accent-foreground"
+                className="inline-flex px-3 py-2 rounded-lg text-xs font-mono text-muted-foreground border border-border bg-card/80 hover:bg-accent hover:text-accent-foreground whitespace-nowrap"
               >
                 Skills
+              </button>
+            )}
+            {sectionVisibility.business && (
+              <button
+                type="button"
+                onClick={() => scrollToSection("business")}
+                className="inline-flex px-3 py-2 rounded-lg text-xs font-mono text-muted-foreground border border-border bg-card/80 hover:bg-accent hover:text-accent-foreground whitespace-nowrap"
+              >
+                Web Solution
               </button>
             )}
             {sectionVisibility.timeline && (
               <button
                 type="button"
                 onClick={() => scrollToSection("timeline")}
-                className="hidden md:inline-flex px-3 py-2 rounded-lg text-xs font-mono text-muted-foreground border border-border bg-card/80 hover:bg-accent hover:text-accent-foreground"
+                className="inline-flex px-3 py-2 rounded-lg text-xs font-mono text-muted-foreground border border-border bg-card/80 hover:bg-accent hover:text-accent-foreground whitespace-nowrap"
               >
                 Timeline
               </button>
@@ -603,7 +615,7 @@ export function HeroSection() {
               <button
                 type="button"
                 onClick={() => scrollToSection("contact")}
-                className="hidden md:inline-flex px-3 py-2 rounded-lg text-xs font-mono text-muted-foreground border border-border bg-card/80 hover:bg-accent hover:text-accent-foreground"
+                className="inline-flex px-3 py-2 rounded-lg text-xs font-mono text-muted-foreground border border-border bg-card/80 hover:bg-accent hover:text-accent-foreground whitespace-nowrap"
               >
                 Contact
               </button>
@@ -988,6 +1000,8 @@ export function HeroSection() {
       )}
 
       {sectionVisibility.contact && <ContactSection />}
+
+      {sectionVisibility.business && <BusinessSection />}
 
       {isControlOpen && (
         <div className="fixed inset-0 z-120 bg-black/60 p-4 flex items-center justify-center">
