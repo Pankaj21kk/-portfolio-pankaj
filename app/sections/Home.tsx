@@ -2,9 +2,9 @@
 
 import { type Variants, motion, useMotionValue, useSpring } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 import { ParticleBackground } from "@/components/Perticlebackground";
-import { BusinessSection } from "@/app/sections/BusinessSection";
 import { ContactSection } from "@/app/sections/contactsection";
 import { LoadingScreen } from "@/components/LoadingScreenElement";
 import { TypewriterEffect } from "@/components/TypewriterEffect";
@@ -119,24 +119,6 @@ const EXPERIENCE_ITEMS = [
       "Collaborated on problem-solving and engineering workflows in academic teams.",
       "Strengthened fundamentals in data handling, API design, and application structure.",
     ],
-  },
-];
-
-const HIGHLIGHT_CARDS = [
-  {
-    title: "Fast Delivery",
-    metric: "< 48h",
-    description: "Rapid prototyping and clear iteration loops for quick product validation.",
-  },
-  {
-    title: "Production Focus",
-    metric: "99%",
-    description: "Clean code, responsive UI, and reliable backend integration for real users.",
-  },
-  {
-    title: "Learning Velocity",
-    metric: "Daily",
-    description: "Consistent upskilling in modern web architecture and developer tooling.",
   },
 ];
 
@@ -275,7 +257,11 @@ function ProjectGrid({ projects }: { projects: ProjectCardType[] }) {
 
 function scrollToSection(id: string) {
   const el = document.getElementById(id);
-  if (el) el.scrollIntoView({ behavior: "smooth" });
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth" });
+    return;
+  }
+  window.location.href = `/#${id}`;
 }
 
 export function HeroSection() {
@@ -300,7 +286,13 @@ export function HeroSection() {
     if (typeof window === "undefined") return DEFAULT_VISIBILITY;
     try {
       const savedVisibility = localStorage.getItem(SECTION_STORAGE_KEY);
-      return savedVisibility ? JSON.parse(savedVisibility) : DEFAULT_VISIBILITY;
+      if (!savedVisibility) return DEFAULT_VISIBILITY;
+      const parsed = JSON.parse(savedVisibility) as Partial<SectionVisibility>;
+      return {
+        ...DEFAULT_VISIBILITY,
+        ...parsed,
+        business: true,
+      };
     } catch {
       return DEFAULT_VISIBILITY;
     }
@@ -593,15 +585,12 @@ export function HeroSection() {
                 Skills
               </button>
             )}
-            {sectionVisibility.business && (
-              <button
-                type="button"
-                onClick={() => scrollToSection("business")}
-                className="inline-flex px-3 py-2 rounded-lg text-xs font-mono text-muted-foreground border border-border bg-card/80 hover:bg-accent hover:text-accent-foreground whitespace-nowrap"
-              >
-                Web Solution
-              </button>
-            )}
+            <a
+              href="/pankaj-web-solution"
+              className="inline-flex px-3 py-2 rounded-lg text-xs font-mono text-muted-foreground border border-border bg-card/80 hover:bg-accent hover:text-accent-foreground whitespace-nowrap"
+            >
+              Web Solution
+            </a>
             {sectionVisibility.timeline && (
               <button
                 type="button"
@@ -809,41 +798,6 @@ export function HeroSection() {
       />
       </section>
 
-      {sectionVisibility.highlights && (
-        <section id="highlights" className="relative px-6 py-18 md:py-22 bg-background scroll-mt-24">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8">
-            <Badge className="px-4 py-1.5 text-xs font-mono tracking-widest uppercase mb-3">
-              Why Work With Me
-            </Badge>
-            <h2 className="text-3xl md:text-4xl font-display font-bold tracking-tight mb-2">Highlights</h2>
-            <p className="text-sm md:text-base text-muted-foreground font-mono">
-              A quick snapshot of how I build and ship digital products.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {HIGHLIGHT_CARDS.map((card, idx) => (
-              <motion.article
-                key={card.title}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.25 }}
-                transition={{ duration: 0.45, delay: idx * 0.08 }}
-                className="rounded-2xl border border-border bg-card/85 p-5"
-              >
-                <p className="text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground mb-3">
-                  {card.title}
-                </p>
-                <p className="text-3xl font-display font-bold text-foreground mb-3">{card.metric}</p>
-                <p className="text-sm text-muted-foreground leading-relaxed">{card.description}</p>
-              </motion.article>
-            ))}
-          </div>
-        </div>
-        </section>
-      )}
-
       {sectionVisibility.projects && (
         <section
         id="projects"
@@ -1001,7 +955,41 @@ export function HeroSection() {
 
       {sectionVisibility.contact && <ContactSection />}
 
-      {sectionVisibility.business && <BusinessSection />}
+      {sectionVisibility.business && (
+        <section id="business-teaser" className="relative px-6 py-18 md:py-22 bg-background scroll-mt-24">
+          <div className="max-w-6xl mx-auto">
+            <div className="rounded-3xl border border-border bg-card/85 p-6 md:p-8">
+              <div className="grid gap-5 md:grid-cols-[1.25fr_1fr] md:items-center">
+                <div>
+                  <Badge className="px-4 py-1.5 text-xs font-mono tracking-widest uppercase mb-3">
+                    About Pankaj Web Solution
+                  </Badge>
+                  <h2 className="text-3xl md:text-4xl font-display font-bold tracking-tight mb-2">
+                    Business Services Inside Portfolio
+                  </h2>
+                  <p className="text-sm md:text-base text-muted-foreground mb-5">
+                    This portfolio now includes my complete business website offering: strategy, timeline,
+                    pricing breakdown, and previous client work in one place.
+                  </p>
+                  <Button asChild className="rounded-xl px-6 py-3 text-sm font-semibold">
+                    <a href="/pankaj-web-solution">Visit Our Website</a>
+                  </Button>
+                </div>
+
+                <div className="overflow-hidden rounded-2xl border border-border">
+                  <Image
+                    src="/business/hero-website.svg"
+                    alt="Pankaj Web Solution business preview"
+                    width={800}
+                    height={520}
+                    className="h-auto w-full"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {isControlOpen && (
         <div className="fixed inset-0 z-120 bg-black/60 p-4 flex items-center justify-center">
